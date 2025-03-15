@@ -2,6 +2,7 @@ package Maman11Q1;
 
 import java.awt.Font;
 
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 
 public class MessageUtil {
@@ -22,9 +23,7 @@ public class MessageUtil {
 		textArea.setWrapStyleWord(true);
 		textArea.setColumns(30);
 
-		System.out.println(title + ": " + message);
 		// Display the message dialog
-		// JOptionPane.showMessageDialog(null, textArea, title,
-		// JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane.showMessageDialog(null, textArea, title, JOptionPane.INFORMATION_MESSAGE);
 	}
 }
