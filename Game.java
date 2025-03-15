@@ -1,176 +1,176 @@
 package Maman11Q1;
 
-import java.awt.Font;
 import java.util.ArrayList;
-
-import javax.swing.JOptionPane;
-import javax.swing.JTextArea;
 
 public class Game {
 
-	private static final int NUMBER_OF_CARDS = 52;
 	private static final int CARDS_FOR_EACH_PLAYER = 26;
+	private static final int MIN_CARDS_FOR_WAR = 3;
+
+	private ArrayList<Card> deckOne; // Player One's deck
+	private ArrayList<Card> deckTwo; // Player Two's deck
 
 	public static void main(String[] args) {
+		new Game().startGame();
+	}
+
+	// Manages the War card game between two players.
+	private void startGame() {
 
 		// Notify that the game has started using Comic Sans MS font.
-		showStyleJOptionPaneMessage("Game Start", "--- The war game is start !!!! ---");
+		MessageUtil.showStyleJOptionPaneMessage("Game Start", "--- The war game has started! ---");
 
-		// Create, shuffle, and split the deck between two players.
-		DeckOfCards deckOfCards = new DeckOfCards();
-		deckOfCards.shuffle();
-		ArrayList<Card> deckOne = new ArrayList<>(CARDS_FOR_EACH_PLAYER);
-		ArrayList<Card> deckTwo = new ArrayList<>(CARDS_FOR_EACH_PLAYER);
-		splitCards(deckOne, deckTwo, deckOfCards);
+		initializeGame();// Create, shuffle, and split the deck between two players.
 
 		// Play rounds until one player's deck is empty.
 		while (!deckOne.isEmpty() && !deckTwo.isEmpty()) {
-
-			// Remove the top card from each deck.
-			Card cardOne = deckOne.remove(0);
-			Card cardTwo = deckTwo.remove(0);
-
-			String message = "Player One's Card: " + cardOne.toString() + "\n" + "Player Two's Card: "
-					+ cardTwo.toString() + "\n";
-
-			// Compare cards to decide the round winner.
-			// Player One wins the round: add both cards to the bottom of deckOne.
-			if (cardOne.getCardNumber() > cardTwo.getCardNumber()) {
-				deckOne.add(cardOne);
-				deckOne.add(cardTwo);
-
-				message += "**Player One's win the round**";
-				// Display the consolidated round result.
-				showStyleJOptionPaneMessage("Round Result", message);
-			}
-			// Player Two wins the round.
-			else if (cardOne.getCardNumber() < cardTwo.getCardNumber()) {
-				deckTwo.add(cardTwo);
-				deckTwo.add(cardOne);
-
-				message += "**Player Two's win the round**";
-				// Display the consolidated round result.
-				showStyleJOptionPaneMessage("Round Result", message);
-
-			}
-
-			else {
-
-				// In case of a tie, start a war.
-				message += "----------It's a tie! Prepare for WAR!------------";
-				showStyleJOptionPaneMessage("Round Result", message);
-				ArrayList<Card> warPile = new ArrayList<>();
-				warPile.add(cardOne);
-				warPile.add(cardTwo);
-				isWar(deckOne, deckTwo, warPile);
-			}
-
+			playRound();
 		}
 
 		// Determine the winner.
-		if (deckOne.isEmpty()) {
-			showStyleJOptionPaneMessage("Game Winner!", "The winner is player Two!!");
-			return;
+		determineWinner();
+
+	}
+
+	// Create, shuffle, and split the deck between two players.
+	private void initializeGame() {
+		// Create, shuffle, and split the deck between two players.
+		DeckOfCards deckOfCards = new DeckOfCards();
+		deckOfCards.shuffle();
+		deckOne = new ArrayList<>(CARDS_FOR_EACH_PLAYER);
+		deckTwo = new ArrayList<>(CARDS_FOR_EACH_PLAYER);
+		DeckOfCards.splitCards(deckOne, deckTwo, deckOfCards);
+	}
+
+	// Determines and announces the winner of the game.
+	private void determineWinner() {
+		// Determine the winner.
+		if (this.deckOne.isEmpty()) {
+			MessageUtil.showStyleJOptionPaneMessage("Game Winner!", "The winner is player Two!!");
 		} else {
-			showStyleJOptionPaneMessage("Game Winner!", "The winner is player Two!!");
-			return;
-		}
-
-	}
-
-	// Splits the full deck between two players by alternating cards.
-	private static void splitCards(ArrayList<Card> deckOne, ArrayList<Card> deckTwo, DeckOfCards deckOfCards) {
-		for (int i = 0; i < NUMBER_OF_CARDS; i++) {
-			if (i % 2 == 0) {
-				deckOne.add(deckOfCards.dealCard());
-
-			} else {
-				deckTwo.add(deckOfCards.dealCard());
-			}
+			MessageUtil.showStyleJOptionPaneMessage("Game Winner!", "The winner is player One!!");
 		}
 	}
 
-	// function helper to do the messages and make them look nice ;)
-	// i know its not neccessery
-	private static void showStyleJOptionPaneMessage(String title, String message) {
-		JTextArea textArea = new JTextArea(message);
+	// Play one round of the game
+	private void playRound() {
 
-		// Set the font
-		textArea.setFont(new Font("Comic Sans MS", Font.PLAIN, 18));
+		// Remove the top card from each deck.
+		Card cardOne = deckOne.remove(0);
+		Card cardTwo = deckTwo.remove(0);
 
-		// Make it non-editable, no border, and transparent to look like a label
-		textArea.setEditable(false);
-		textArea.setOpaque(false);
-		textArea.setBorder(null);
+		// Create a message displaying the played cards.
+		String message = "Player One's Card: " + cardOne.toString() + "\n" + "Player Two's Card: " + cardTwo.toString()
+				+ "\n";
 
-		// Enable line wrapping
-		textArea.setLineWrap(true);
-		textArea.setWrapStyleWord(true);
-		textArea.setColumns(30);
+		// Compare cards to decide the round winner.
+		// Player One wins the round: add both cards to the bottom of deckOne.
+		if (cardOne.getCardNumber() > cardTwo.getCardNumber()) {
+			deckOne.add(cardOne);
+			deckOne.add(cardTwo);
 
-		// Display the message dialog
-		JOptionPane.showMessageDialog(null, textArea, title, JOptionPane.INFORMATION_MESSAGE);
+			message += "Player One wins the round";
+			// Display the consolidated round result.
+			MessageUtil.showStyleJOptionPaneMessage("Round Result", message);
+		}
+		// Player Two wins the round.
+		else if (cardOne.getCardNumber() < cardTwo.getCardNumber()) {
+			deckTwo.add(cardTwo);
+			deckTwo.add(cardOne);
+
+			message += "Player Two wins the round";
+			// Display the consolidated round result.
+			MessageUtil.showStyleJOptionPaneMessage("Round Result", message);
+
+		}
+
+		else {
+
+			// In case of a tie, start a war.
+			message += "----------It's a tie! Prepare for WAR!------------";
+			MessageUtil.showStyleJOptionPaneMessage("Round Result", message);
+			ArrayList<Card> warPile = new ArrayList<>();
+			warPile.add(cardOne);
+			warPile.add(cardTwo);
+			handleWar(warPile);
+		}
+
 	}
 
 	// Handle a war round.
-	private static void isWar(ArrayList<Card> deckOne, ArrayList<Card> deckTwo, ArrayList<Card> warPile) {
-		boolean isWarState = true;
+	private void handleWar(ArrayList<Card> warPile) {
+		// Check if players have enough cards for war.
+		if (!haveEnoughCardsForWar())
+			return;
 
-		// Continue war until a player wins or one player lacks enough cards.
-		while (isWarState == true && !deckOne.isEmpty() && !deckTwo.isEmpty()) {
+		// Play one round of war (if need will call again from inside)
+		playRoundOfWar(warPile);
 
-			// If a player does not have at least 3 cards, they lose.
-			if (deckOne.size() < 3) {
-				deckOne.clear(); // Force game over.
-				return;
-			} else if (deckTwo.size() < 3) {
-				deckTwo.clear(); // Force game over.
-				return;
-			}
+	}
 
-			// Each player places two cards face down into the war pile.
-			warPile.add(deckOne.remove(0));
-			warPile.add(deckOne.remove(0));
-			warPile.add(deckTwo.remove(0));
-			warPile.add(deckTwo.remove(0));
-
-			// Each player draws one card to compare.
-			Card cardOne = deckOne.remove(0);
-			Card cardTwo = deckTwo.remove(0);
-
-			String message = "Player One's Card: " + cardOne.toString() + "\n" + "Player Two's Card: "
-					+ cardTwo.toString() + "\n";
-
-			// Add the drawn cards to the war pile.
-			warPile.add(cardOne);
-			warPile.add(cardTwo);
-
-			// Determine the war round winner.
-			if (cardOne.getCardNumber() > cardTwo.getCardNumber()) {
-				// Player One wins all cards in the war pile
-				deckOne.addAll(warPile);
-				warPile.clear();
-				message += "**Winner: Player One wins this WAR!**";
-				// Display the consolidated round result.
-				showStyleJOptionPaneMessage("Round Result", message);
-				isWarState = false;
-			} else if (cardOne.getCardNumber() < cardTwo.getCardNumber()) {
-				// Player Two wins all cards in the war pile
-				deckTwo.addAll(warPile);
-				warPile.clear();
-				message += "**Winner: Player Two wins this WAR!**";
-				// Display the consolidated round result.
-				showStyleJOptionPaneMessage("Round Result", message);
-				isWarState = false;
-			} else {
-				// If tied again, the war continues with accumulated warPile.
-				message += "---------It's a tie! Prepare for another WAR!-------";
-				// Display the consolidated round result.
-				showStyleJOptionPaneMessage("Round Result", message);
-			}
-
+	// if one of ther players have not enough card for war they lose
+	private boolean haveEnoughCardsForWar() {
+		if (this.deckOne.size() < MIN_CARDS_FOR_WAR) {
+			this.deckOne.clear(); // Force game over.
+			return false;
 		}
+		if (this.deckTwo.size() < MIN_CARDS_FOR_WAR) {
+			this.deckTwo.clear(); // Force game over.
+			return false;
+		}
+		return true;
+	}
 
+	// Place 2 cards in war pile
+	private void placeWarCardsInPile(ArrayList<Card> warPile) {
+		for (int i = 0; i < 2; i++) { // Each player places 2 cards face down
+			warPile.add(this.deckOne.remove(0));
+			warPile.add(this.deckTwo.remove(0));
+		}
+	}
+
+	// Play one round of war
+	private void playRoundOfWar(ArrayList<Card> warPile) {
+		// Check if players have enough cards for war.
+		if (!haveEnoughCardsForWar())
+			return;
+
+		// Each player places two cards face down into the war pile.
+		placeWarCardsInPile(warPile);
+
+		// Each player draws one card to compare.
+		Card cardOne = this.deckOne.remove(0);
+		Card cardTwo = this.deckTwo.remove(0);
+
+		String message = "Player One's Card: " + cardOne.toString() + "\n" + "Player Two's Card: " + cardTwo.toString()
+				+ "\n";
+
+		// Add the drawn cards to the war pile.
+		warPile.add(cardOne);
+		warPile.add(cardTwo);
+
+		// Determine the war round winner.
+		if (cardOne.getCardNumber() > cardTwo.getCardNumber()) {
+			// Player One wins all cards in the war pile
+			this.deckOne.addAll(warPile);
+			warPile.clear();
+			message += "Winner: Player One wins this WAR!";
+			// Display the consolidated round result.
+			MessageUtil.showStyleJOptionPaneMessage("Round Result", message);
+		} else if (cardOne.getCardNumber() < cardTwo.getCardNumber()) {
+			// Player Two wins all cards in the war pile
+			this.deckTwo.addAll(warPile);
+			warPile.clear();
+			message += "Winner: Player Two wins this WAR!";
+			// Display the consolidated round result.
+			MessageUtil.showStyleJOptionPaneMessage("Round Result", message);
+		} else {
+			// If tied again, the war continues with accumulated warPile.
+			message += "---------It's a tie! Prepare for another WAR!-------";
+			// Display the consolidated round result.
+			MessageUtil.showStyleJOptionPaneMessage("Round Result", message);
+			handleWar(warPile);
+		}
 	}
 
 }
