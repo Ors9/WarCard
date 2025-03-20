@@ -1,6 +1,6 @@
 # War Card Game
 
-#Important note
+## Important note
 You can download the ZIP file and twice click on the run.bat to run it on your computer
 
 ## Description
