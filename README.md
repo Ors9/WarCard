@@ -1,7 +1,7 @@
 # War Card Game
 
 ## Important note
-You can download the ZIP file and twice click on the run.bat to run it on your computer
+You can download the ZIP file and extract the files , after that go to the folder you extract the files and  click twice on the run.bat to run it on your computer
 
 ## Description
 This project implements the classic card game **"War"**. The game is structured into different components, including:
